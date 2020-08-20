@@ -173,12 +173,12 @@ def generateRuntimeFigure( fname, figfile ):
 
         count = count + 1
 
-    _ = axs[0][0].set_ylim( [45, 55] )
+    _ = axs[0][0].set_ylim( [64, 67] )
     _ = axs[0][0].set_title( 'FTQ' )
     _ = axs[0][0].set_xlabel( 'Ranks' )
     _ = axs[0][0].set_ylabel( 'Runtime (Seconds)' )
 
-    _ = axs[0][1].set_ylim( [70, 80] )
+    _ = axs[0][1].set_ylim( [88, 93] )
     _ = axs[0][1].set_title( 'FWQ' )
     _ = axs[0][1].set_xlabel( 'Ranks' )
     _ = axs[0][1].set_ylabel( 'Runtime (Seconds)' )
@@ -188,12 +188,12 @@ def generateRuntimeFigure( fname, figfile ):
     _ = axs[0][2].set_xlabel( 'Ranks' )
     _ = axs[0][2].set_ylabel( 'Runtime (Seconds)' )
 
-    _ = axs[1][0].set_ylim( [400, 600] )
+    _ = axs[1][0].set_ylim( [550, 570] )
     _ = axs[1][0].set_title( 'SPMV' )
     _ = axs[1][0].set_xlabel( 'Ranks' )
     _ = axs[1][0].set_ylabel( 'Runtime (Seconds)' )
 
-    _ = axs[1][1].set_ylim( [800, 1100] )
+    _ = axs[1][1].set_ylim( [950, 1050] )
     _ = axs[1][1].set_title( 'HPCG' )
     _ = axs[1][1].set_xlabel( 'Ranks' )
     _ = axs[1][1].set_ylabel( 'Runtime (Seconds)' )
@@ -211,9 +211,6 @@ def generatePredictionFigure( df_All, workload, baseRanks, fname ):
 
     outfile = 'Figures/Attaway_' + workload + '_prediction'
 
-    df_Attaway_NoStencil = df_All[ ( df_All['machine'] == 'Attaway' ) & ( df_All['processors'] == baseRanks ) & ( df_All['workload'] == workload ) & ( df_All['stencil_size'] == 0 ) ]
-    df_Attaway_Stencil = df_All [ ( df_All['machine'] == 'Attaway' ) & ( df_All['processors'] == baseRanks ) & ( df_All['workload'] == workload ) & ( df_All['stencil_size'] != 0 ) ]
-
     kvals = np.array( [1, 2, 4] )
     iterations = 50
 
@@ -227,8 +224,15 @@ def generatePredictionFigure( df_All, workload, baseRanks, fname ):
 
     count = 0
     labels = ['No Stencil', 'Stencil']
+    if workload == 'hpcg' or workload == 'lammps':
+        df_Attaway_NoStencil = df_All[ ( df_All['machine'] == 'Attaway' ) & ( df_All['processors'] == baseRanks ) & ( df_All['workload'] == workload ) & ( df_All['stencil_size'] == 0 ) ]
+        df_List = [df_Attaway_NoStencil]
+    else:
+        df_Attaway_NoStencil = df_All[ ( df_All['machine'] == 'Attaway' ) & ( df_All['processors'] == baseRanks ) & ( df_All['workload'] == workload ) & ( df_All['stencil_size'] == 0 ) ]
+        df_Attaway_Stencil = df_All [ ( df_All['machine'] == 'Attaway' ) & ( df_All['processors'] == baseRanks ) & ( df_All['workload'] == workload ) & ( df_All['stencil_size'] != 0 ) ]
+        df_List = [df_Attaway_NoStencil, df_Attaway_Stencil]
 
-    for df in [df_Attaway_NoStencil, df_Attaway_Stencil]:
+    for df in df_List:
 
         print( labels[count] )
 
@@ -257,11 +261,11 @@ def generatePredictionFigure( df_All, workload, baseRanks, fname ):
             upperBound.append( expList[-1] )
 
         if count == 0:
-            _ = axs[count].plot( baseranks * kvals, median, color='blue' )
-            _ = axs[count].fill_between( baseranks * kvals, lowerBound, upperBound, color='blue', alpha=.1 )
+            _ = axs[count].plot( baseRanks * kvals, median, color='red' )
+            _ = axs[count].fill_between( baseRanks * kvals, lowerBound, upperBound, color='red', alpha=.1 )
         if count == 1:
-            _ = axs[count].plot( baseranks * kvals, median, color='red' )
-            _ = axs[count].fill_between( baseranks * kvals, lowerBound, upperBound, color='red', alpha=.1)
+            _ = axs[count].plot( baseRanks * kvals, median, color='blue' )
+            _ = axs[count].fill_between( baseRanks * kvals, lowerBound, upperBound, color='blue', alpha=.1)
 
         if count == 0:
             yMin = min( lowerBound)
@@ -278,7 +282,7 @@ def generatePredictionFigure( df_All, workload, baseRanks, fname ):
 
     for run in range( 0, len( attawayData ) ):
         label = ''
-        workload = attawayData['Workload'][run]
+        myworkload = attawayData['Workload'][run]
         ranks = attawayData['Ranks'][run]
         stencil = attawayData['Stencil'][run]
 
@@ -288,17 +292,19 @@ def generatePredictionFigure( df_All, workload, baseRanks, fname ):
             label = label + 'Stencil'
 
         if label == '':
-            axs[0].plot( int( ranks ), currentRunTime, 'o', color='red' )
+            if myworkload == workload:
+                axs[0].plot( int( ranks ), currentRunTime, 'o', color='red' )
 
         if label == 'Stencil':
-            axs[1].plot( int( ranks ), currentRunTime, 'o', color='blue' )
+            if myworkload == workload:
+                axs[1].plot( int( ranks ), currentRunTime, 'o', color='blue' )
 
-    _ = axs[0].set_ylim( [0.5 * yMin, 1.5 * yMax] )
+    _ = axs[0].set_ylim( [0.95 * yMin, 1.05 * yMax] )
     _ = axs[0].set_title( 'No Interference' )
     _ = axs[0].set_xlabel( 'Ranks' )
     _ = axs[0].set_ylabel( 'Runtime (Seconds)' )
 
-    _ = axs[1].set_ylim( [0.5 * yMin, 1.5 * yMax] )
+    _ = axs[1].set_ylim( [0.95 * yMin, 1.05 * yMax] )
     _ = axs[1].set_title( 'Stencil' )
     _ = axs[1].set_xlabel( 'Ranks' )
     _ = axs[1].set_ylabel( 'Runtime (Seconds)' )
@@ -307,7 +313,7 @@ def generatePredictionFigure( df_All, workload, baseRanks, fname ):
 
 
 def main():
-    # writeMetaData( 'Results/AttawayData.csv', list( range( 235, 320 ) ) )
+    # writeMetaData( 'Results/AttawayData.csv', list( range( 235, 330 ) ) )
 
     # writeNormalizedMetaData( 'Results/AttawayData.csv', 'Results/AttawayNormalized.csv' )
 
@@ -318,10 +324,10 @@ def main():
     df_All = analysis.getAllExperiments()
 
     for workload in workloads:
-        if workload == 'spmv' or workload == 'hpcg':
-            baseRanks = 512
-        else:
+        if workload == 'dgemm':
             baseRanks = 256
+        else:
+            baseRanks = 512
 
         generatePredictionFigure( df_All, workload, baseRanks, 'Results/AttawayData.csv' )
 

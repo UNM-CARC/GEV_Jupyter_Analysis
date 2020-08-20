@@ -211,9 +211,6 @@ def generatePredictionFigure( df_All, workload, baseRanks, fname ):
 
     outfile = 'Figures/Cori_' + workload + '_prediction'
 
-    df_Cori_NoStencil = df_All[ ( df_All['machine'] == 'Cori' ) & ( df_All['processors'] == baseRanks ) & ( df_All['workload'] == workload ) & ( df_All['stencil_size'] == 0 ) ]
-    df_Cori_Stencil = df_All [ ( df_All['machine'] == 'Cori' ) & ( df_All['processors'] == baseRanks ) & ( df_All['workload'] == workload ) & ( df_All['stencil_size'] != 0 ) ]
-
     kvals = np.array( [1, 2, 4] )
     iterations = 50
 
@@ -228,7 +225,15 @@ def generatePredictionFigure( df_All, workload, baseRanks, fname ):
     count = 0
     labels = ['No Stencil', 'Stencil']
 
-    for df in [df_Cori_NoStencil, df_Cori_Stencil]:
+    if workload == 'hpcg' or workload == 'lammps':
+        df_Cori_NoStencil = df_All[ ( df_All['machine'] == 'Cori' ) & ( df_All['processors'] == baseRanks ) & ( df_All['workload'] == workload ) & ( df_All['stencil_size'] == 0 ) ]
+        df_List = [df_Cori_NoStencil]
+    else:
+        df_Cori_NoStencil = df_All[ ( df_All['machine'] == 'Cori' ) & ( df_All['processors'] == baseRanks ) & ( df_All['workload'] == workload ) & ( df_All['stencil_size'] == 0 ) ]
+        df_Cori_Stencil = df_All [ ( df_All['machine'] == 'Cori' ) & ( df_All['processors'] == baseRanks ) & ( df_All['workload'] == workload ) & ( df_All['stencil_size'] != 0 ) ]
+        df_List = [df_Cori_NoStencil, df_Cori_Stencil]
+
+    for df in df_List:
 
         print( labels[count] )
 
@@ -257,11 +262,11 @@ def generatePredictionFigure( df_All, workload, baseRanks, fname ):
             upperBound.append( expList[-1] )
 
         if count == 0:
-            _ = axs[count].plot( baseranks * kvals, median, color='blue' )
-            _ = axs[count].fill_between( baseranks * kvals, lowerBound, upperBound, color='blue', alpha=.1 )
+            _ = axs[count].plot( baseRanks * kvals, median, color='red' )
+            _ = axs[count].fill_between( baseRanks * kvals, lowerBound, upperBound, color='red', alpha=.1 )
         if count == 1:
-            _ = axs[count].plot( baseranks * kvals, median, color='red' )
-            _ = axs[count].fill_between( baseranks * kvals, lowerBound, upperBound, color='red', alpha=.1)
+            _ = axs[count].plot( baseRanks * kvals, median, color='blue' )
+            _ = axs[count].fill_between( baseRanks * kvals, lowerBound, upperBound, color='blue', alpha=.1)
 
         if count == 0:
             yMin = min( lowerBound)
@@ -278,7 +283,7 @@ def generatePredictionFigure( df_All, workload, baseRanks, fname ):
 
     for run in range( 0, len( coriData ) ):
         label = ''
-        workload = coriData['Workload'][run]
+        myworkload = coriData['Workload'][run]
         ranks = coriData['Ranks'][run]
         stencil = coriData['Stencil'][run]
 
@@ -288,17 +293,19 @@ def generatePredictionFigure( df_All, workload, baseRanks, fname ):
             label = label + 'Stencil'
 
         if label == '':
-            axs[0].plot( int( ranks ), currentRunTime, 'o', color='red' )
+            if myworkload == workload:
+                axs[0].plot( int( ranks ), currentRunTime, 'o', color='red' )
 
         if label == 'Stencil':
-            axs[1].plot( int( ranks ), currentRunTime, 'o', color='blue' )
+            if myworkload == workload:
+                axs[1].plot( int( ranks ), currentRunTime, 'o', color='blue' )
 
-    _ = axs[0].set_ylim( [0.5 * yMin, 1.5 * yMax] )
+    _ = axs[0].set_ylim( [0.95 * yMin, 1.05 * yMax] )
     _ = axs[0].set_title( 'No Interference' )
     _ = axs[0].set_xlabel( 'Ranks' )
     _ = axs[0].set_ylabel( 'Runtime (Seconds)' )
 
-    _ = axs[1].set_ylim( [0.5 * yMin, 1.5 * yMax] )
+    _ = axs[1].set_ylim( [0.95 * yMin, 1.05 * yMax] )
     _ = axs[1].set_title( 'Stencil' )
     _ = axs[1].set_xlabel( 'Ranks' )
     _ = axs[1].set_ylabel( 'Runtime (Seconds)' )

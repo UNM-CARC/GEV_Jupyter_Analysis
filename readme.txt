@@ -525,7 +525,19 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             lammps -a 64000 -b 250
 
-    235-244: Attaway, Verbose
+    235-254: Attaway, Verbose
+        Nodes: 8
+        Cores per Node: 32
+        Iterations: 500
+        Stencil: 0, 32768
+        Inner Looops: 1
+        Rabbit: False
+        Osu: False
+        Rabbit_Workload: False
+        Workloads:
+            dgemm -a 256 -b 64
+
+    255-264: Attaway, Verbose
         Nodes: 16
         Cores per Node: 32
         Iterations: 500
@@ -537,7 +549,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             dgemm -a 256 -b 64
 
-    245-249: Attaway, Verbose
+    265-274: Attaway, Verbose
         Nodes: 32
         Cores per Node: 32
         Iterations: 500
@@ -549,7 +561,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             dgemm -a 256 -b 64
 
-    250-254: Attaway, Verbose
+    275-279: Attaway, Verbose
         Nodes: 16
         Cores per Node: 32
         Iterations: 500
@@ -561,7 +573,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             sleep -a 100000 -b 10000
 
-    255-259: Attaway, Verbose
+    280-284: Attaway, Verbose
         Nodes: 32
         Cores per Node: 32
         Iterations: 500
@@ -573,7 +585,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             sleep -a 100000 -b 10000
 
-    260-264: Attaway, Verbose
+    285-289: Attaway, Verbose
         Nodes: 16
         Cores per Node: 32
         Iterations: 500
@@ -585,7 +597,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             fwq -a 100000 -b 10000
 
-    265-269: Attaway, Verbose
+    290-294: Attaway, Verbose
         Nodes: 32
         Cores per Node: 32
         Iterations: 500
@@ -597,19 +609,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             fwq -a 100000 -b 10000
 
-    270-279: Attaway, Verbose
-        Nodes: 8
-        Cores per Node: 32
-        Iterations: 200
-        Stencil: 0, 32768
-        Inner Loops: 1
-        Rabbit: False
-        Osu: False
-        Rabbit_Workload: False
-        Workloads:
-            spmv -a 114 -b 25
-
-    280-289: Attaway, Verbose
+    295-304: Attaway, Verbose
         Nodes: 16
         Cores per Node: 32
         Iterations: 200
@@ -620,46 +620,22 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Rabbit_Workload: False
         Workloads:
             spmv -a 114 -b 25
-
-    290-294: Attaway, Verbose (Waiting on)
-        Nodes: 32
-        Cores per Node: 32
-        Iterations: 200
-        Stencil: 0, 32768
-        Inner Loops: 1
-        Rabbit: False
-        Osu: False
-        Rabbit_Workload: False
-        Workloads:
-            spmv -a 114 -b 25
-
-    295-299: Attaway, Verbose
-        Nodes: 8
-        Cores per Node: 32
-        Iterations: 100
-        Stencil: 0
-        Inner Loops: 1
-        Rabbit: False
-        Osu: False
-        Rabbit_Workload: False
-        Workloads:
-            hpcg -a 114 -b 25
-
-    300-304: Attaway, Verbose
-        Nodes: 16
-        Cores per Node: 32
-        Iterations: 100
-        Stencil: 0
-        Inner Loops: 1
-        Rabbit: False
-        Osu: False
-        Rabbit_Workload: False
-        Workloads:
-            hpcg -a 114 -b 25
 
     305-309: Attaway, Verbose (Waiting on)
         Nodes: 32
         Cores per Node: 32
+        Iterations: 200
+        Stencil: 0, 32768
+        Inner Loops: 1
+        Rabbit: False
+        Osu: False
+        Rabbit_Workload: False
+        Workloads:
+            spmv -a 114 -b 25
+
+    310-314: Attaway, Verbose
+        Nodes: 16
+        Cores per Node: 32
         Iterations: 100
         Stencil: 0
         Inner Loops: 1
@@ -669,7 +645,19 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             hpcg -a 114 -b 25
 
-    310-314: Attaway, Verbose (Waiting on)
+    315-319: Attaway, Verbose (Waiting on)
+        Nodes: 32
+        Cores per Node: 32
+        Iterations: 100
+        Stencil: 0
+        Inner Loops: 1
+        Rabbit: False
+        Osu: False
+        Rabbit_Workload: False
+        Workloads:
+            hpcg -a 114 -b 25
+
+    320-324: Attaway, Verbose (Waiting on)
         Nodes: 16
         Cores per Node: 32
         Iterations: 100
@@ -681,7 +669,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             lammps -a 64000 -b 250
 
-    315-319: Attaway, Verbose (Waiting on)
+    325-329: Attaway, Verbose (Waiting on)
         Nodes: 54
         Cores per Node: 32
         Iterations: 100
