@@ -216,7 +216,7 @@ def generatePredictionFigure( df_All, workload, baseRanks, CI, fname ):
     workloadData = coriData[ ( coriData['Workload'] == workload ) & ( coriData['Ranks'] == baseRanks )]
 
     kvals = np.array( [1, 2, 4] )
-    iterations = 1000
+    iterations = 100
 
     MILLION = 1000000
     eps = 10 ** -5
@@ -249,6 +249,8 @@ def generatePredictionFigure( df_All, workload, baseRanks, CI, fname ):
             runtimeData = workloadData[workloadData['Stencil'] == 0]['Runtime']
         else:
             runtimeData = workloadData[workloadData['Stencil'] != 0]['Runtime']
+
+        runtimeData = runtimeData.sort_values()
 
         minRuntime = min( runtimeData )
         medianRuntime = runtimeData.iloc[ int( len( runtimeData ) / 2  ) ]
@@ -339,7 +341,7 @@ def generatePredictionFigure( df_All, workload, baseRanks, CI, fname ):
             if myworkload == workload:
                 axs[0].plot( int( ranks ), currentRunTime, 'o', color='red' )
 
-        if not ( workload == 'hpcg' or workload == 'spmv' ):
+        if not ( workload == 'hpcg' or workload == 'lammps' ):
             if label == 'Stencil':
                 if myworkload == workload:
                     axs[1].plot( int( ranks ), currentRunTime, 'o', color='blue' )

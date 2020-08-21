@@ -251,6 +251,8 @@ def generatePredictionFigure( df_All, workload, baseRanks, CI, fname ):
         else:
             runtimeData = workloadData[workloadData['Stencil'] != 0]['Runtime']
 
+        runtimeData = runtimeData.sort_values()
+
         minRuntime = min( runtimeData )
         medianRuntime = runtimeData.iloc[ int( len( runtimeData ) / 2  ) ]
         maxRuntime = max( runtimeData )
