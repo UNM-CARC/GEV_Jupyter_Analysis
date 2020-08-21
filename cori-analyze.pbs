@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#PBS -l walltime=06:00:00
+#PBS -l walltime=01:00:00
 #PBS -n node-exclusive
 #PBS -N gev-vla
 #PBS -j oe

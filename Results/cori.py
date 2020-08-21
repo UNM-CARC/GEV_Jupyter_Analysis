@@ -10,6 +10,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.axes as axes
 
+from scipy import stats
+
 
 def getMetaData( explist ):
     # Get DataFrame of All Experiments
@@ -206,31 +208,34 @@ def generateRuntimeFigure( fname, figfile ):
     plt.savefig( figfile, bbox_inches='tight' )
 
 
-def generatePredictionFigure( df_All, workload, baseRanks, fname ):
+def generatePredictionFigure( df_All, workload, baseRanks, CI, fname ):
     print( 'Generating Prediction for: ' + workload )
 
     outfile = 'Figures/Cori_' + workload + '_prediction'
+    coriData = pd.read_csv( fname )
+    workloadData = coriData[ ( coriData['Workload'] == workload ) & ( coriData['Ranks'] == baseRanks )]
 
     kvals = np.array( [1, 2, 4] )
-    iterations = 50
+    iterations = 100
 
     MILLION = 1000000
+    eps = 10 ** -5
     yMin = 0
     yMax = 0
     count = 0
 
     fig, axs = plt.subplots( 2, 1, figsize=( 10, 10 ) )
-    fig.suptitle( 'Re-Sampled Projections Confidence Interval vs. Actual Runtimes' )
+    fig.suptitle( 'Cori Projection Confidence Interval vs. Actual Runtimes' )
 
     count = 0
     labels = ['No Stencil', 'Stencil']
 
     if workload == 'hpcg' or workload == 'lammps':
-        df_Cori_NoStencil = df_All[ ( df_All['machine'] == 'Cori' ) & ( df_All['processors'] == baseRanks ) & ( df_All['workload'] == workload ) & ( df_All['stencil_size'] == 0 ) ]
+        df_Cori_NoStencil = df_All[ ( df_All['machine'] == 'Cori' ) & ( df_All['processors'] == baseRanks ) & ( df_All['workload'] == workload ) & ( df_All['stencil_size'] == 0 ) & ( df_All['rabbit_workload'] == 0 ) ]
         df_List = [df_Cori_NoStencil]
     else:
-        df_Cori_NoStencil = df_All[ ( df_All['machine'] == 'Cori' ) & ( df_All['processors'] == baseRanks ) & ( df_All['workload'] == workload ) & ( df_All['stencil_size'] == 0 ) ]
-        df_Cori_Stencil = df_All [ ( df_All['machine'] == 'Cori' ) & ( df_All['processors'] == baseRanks ) & ( df_All['workload'] == workload ) & ( df_All['stencil_size'] != 0 ) ]
+        df_Cori_NoStencil = df_All[ ( df_All['machine'] == 'Cori' ) & ( df_All['processors'] == baseRanks ) & ( df_All['workload'] == workload ) & ( df_All['stencil_size'] == 0 ) & ( df_All['rabbit_workload'] == 0 ) ]
+        df_Cori_Stencil = df_All[ ( df_All['machine'] == 'Cori' ) & ( df_All['processors'] == baseRanks ) & ( df_All['workload'] == workload ) & ( df_All['stencil_size'] != 0 ) & ( df_All['rabbit_workload'] == 0 ) ]
         df_List = [df_Cori_NoStencil, df_Cori_Stencil]
 
     for df in df_List:
@@ -238,34 +243,73 @@ def generatePredictionFigure( df_All, workload, baseRanks, fname ):
         print( labels[count] )
 
         lowerBound = []
-        median = []
+        middle = []
         upperBound = []
+
+        if ( count == 0 ):
+            runtimeData = workloadData[workloadData['Stencil'] == 0]['Runtime']
+        else:
+            runtimeData = workloadData[workloadData['Stencil'] != 0]['Runtime']
+
+        minRuntime = min( runtimeData )
+        medianRuntime = runtimeData.iloc[ int( len( runtimeData ) / 2  ) ]
+        maxRuntime = max( runtimeData )
+
         for k in kvals:
-            expList = []
+            expListMin = []
+            expListMed = []
+            expListMax = []
 
             for run in range( 0, len( df ) ):
                 currentRun = df.iloc[run]
                 eid = currentRun['Experiment']
                 rid = currentRun['expid']
-                currentPath = './mlruns/' + str(eid) + '/' + str(rid) + '/artifacts/bsp-trace.json'
-                currentData = analysis.getData(currentPath)
+                currentPath = './mlruns/' + str( eid ) + '/' + str( rid ) + '/artifacts/bsp-trace.json'
+                currentData = analysis.getData( currentPath )
                 currentData = currentData[currentData['rank'] == 0]
+                currentRuntime = sum( currentData['interval_max_usec'] ) / MILLION
 
-                for i in range( iterations ):
-                    data = analysis.resample_project( currentData, len( currentData ), k, col='interval_max_usec' )
-                    projectedRunTime = sum( data ) / MILLION
-                    expList.append( projectedRunTime )
-                expList.sort()
+                if ( abs( currentRuntime - maxRuntime ) < eps ) or ( abs( currentRuntime - medianRuntime ) < eps ) or ( abs( currentRuntime - minRuntime ) < eps ):
+                    for i in range( iterations ):
+                        data = analysis.resample_project( currentData, len( currentData ), k, col='interval_max_usec' )
+                        projectedRunTime = sum( data ) / MILLION
+                        print( 'Run:', run + 1, '/', len( df ), '\tIteration:', i + 1, '/', iterations, '\tWorkload:', workload, '\tk:', k, '\tProjected Runtime:', projectedRunTime )
 
-            lowerBound.append( expList[0] )
-            median.append( expList[int( len( expList ) / 2 )] )
-            upperBound.append( expList[-1] )
+                        if ( abs( currentRuntime - minRuntime ) < eps ):
+                            expListMin.append( projectedRunTime )
+                        if ( abs( currentRuntime - medianRuntime ) < eps ):
+                            expListMed.append( projectedRunTime )
+                        if ( abs( currentRuntime - maxRuntime ) < eps ):
+                            expListMax.append( projectedRunTime )
+
+            expListMin.sort()
+            expListMed.sort()
+            expListMax.sort()
+
+            meanMin = np.mean( np.array( expListMin ) )
+            stvMin = stats.sem( np.array( expListMin ) )
+
+            meanMed = np.mean( np.array( expListMed ) )
+            stvMed = stats.sem( np.array( expListMed ) )
+
+            meanMax = np.mean( np.array( expListMax ) )
+            stvMax = stats.sem( np.array( expListMax ) )
+
+            intervalMin = stats.norm.interval( CI, loc=meanMin, scale=stvMin )
+            intervalMed = stats.norm.interval( CI, loc=meanMed, scale=stvMed )
+            intervalMax = stats.norm.interval( CI, loc=meanMax, scale=stvMax )
+
+            print( CI, '$ Confidence Interval:', intervalMin[0], intervalMax[1], '\tMedian:', ( intervalMed[0] + intervalMed[1] ) / 2 )
+
+            lowerBound.append( intervalMin[0] )
+            middle.append( ( intervalMed[0] + intervalMed[1] ) / 2 )
+            upperBound.append( intervalMax[1] )
 
         if count == 0:
-            _ = axs[count].plot( baseRanks * kvals, median, color='red' )
+            _ = axs[count].plot( baseRanks * kvals, middle, color='red' )
             _ = axs[count].fill_between( baseRanks * kvals, lowerBound, upperBound, color='red', alpha=.1 )
         if count == 1:
-            _ = axs[count].plot( baseRanks * kvals, median, color='blue' )
+            _ = axs[count].plot( baseRanks * kvals, middle, color='blue' )
             _ = axs[count].fill_between( baseRanks * kvals, lowerBound, upperBound, color='blue', alpha=.1)
 
         if count == 0:
@@ -278,8 +322,6 @@ def generatePredictionFigure( df_All, workload, baseRanks, fname ):
                 yMax = max( upperBound )
 
         count = count + 1
-
-    coriData = pd.read_csv( fname )
 
     for run in range( 0, len( coriData ) ):
         label = ''
@@ -314,7 +356,8 @@ def generatePredictionFigure( df_All, workload, baseRanks, fname ):
 
 
 def main():
-    # writeMetaData( 'Results/CoriData.csv', list( range( 85, 235 ) ) )
+    expRange = list( range( 85, 235 ) )
+    # writeMetaData( 'Results/CoriData.csv', expRange )
 
     # writeNormalizedMetaData( 'Results/CoriData.csv', 'Results/CoriNormalized.csv' )
 
@@ -323,9 +366,12 @@ def main():
     workloads = ['sleep', 'fwq', 'dgemm', 'spmv', 'hpcg', 'lammps']
 
     df_All = analysis.getAllExperiments()
+    df_All = df_All.loc[ df_All[ 'Experiment' ].isin( expRange ) ]
+
     baseRanks = 512
+    CI = 0.95
 
     for workload in workloads:
-        generatePredictionFigure( df_All, workload, baseRanks, 'Results/CoriData.csv' )
+        generatePredictionFigure( df_All, workload, baseRanks, CI, 'Results/CoriData.csv' )
 
 main()
