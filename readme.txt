@@ -1,3 +1,7 @@
+Paper Data is Contained in Runs 85-549
+Cori Data is Runs 85-234 and Runs 330-449
+Attaway Data is Runs 235-329 and Runs 450-549
+
 mlruns:
     1:  Wheeler, Verbose (Finished)
         Nodes: 1, 2, 4, 8, 16, 32, 48
@@ -637,7 +641,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Nodes: 16
         Cores per Node: 32
         Iterations: 100
-        Stencil: 0
+        Stencil: 0, 32768
         Inner Loops: 1
         Rabbit: False
         Osu: False
@@ -645,11 +649,11 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             hpcg -a 114 -b 25
 
-    315-319: Attaway, Verbose (Waiting on)
+    315-319: Attaway, Verbose
         Nodes: 32
         Cores per Node: 32
         Iterations: 100
-        Stencil: 0
+        Stencil: 0, 32768
         Inner Loops: 1
         Rabbit: False
         Osu: False
@@ -680,4 +684,137 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Rabbit_Workload: False
         Workloads:
             lammps -a 64000 -b 250
+
+    330-349: Cori, Verbose (Waiting on)
+        Nodes: 8
+        Cores per Node: 32
+        Iterations: 500
+        Stencil: 0, 32768
+        Inner Loops: 1
+        Rabbit: False
+        Osu: False
+        Rabbit_Workload: False
+        Workloads:
+            sleep -a 100000 -b 10000
+
+    350-369: Cori, Verbose (Waiting on)
+        Nodes: 8
+        Cores per Node: 32
+        Iterations: 500
+        Stencil: 0, 32768
+        Inner Loops: 1
+        Rabbit: False
+        Osu: False
+        Rabbit_Workload: False
+        Workloads:
+            fwq -a 100000 -b 10000
+
+    370-389: Cori, Verbose (Waiting on)
+        Nodes: 8
+        Cores per Node: 32
+        Iterations: 500
+        Stencil: 0, 32768
+        Inner Loops: 1
+        Rabbit: False
+        Osu: False
+        Rabbit_Workload: False
+        Workloads:
+            dgemm -a 256 -b 64
+
+    390-409: Cori, Verbose (Waiting on)
+        Nodes: 8
+        Cores per Node: 32
+        Iterations: 200
+        Stencil: 0, 32768
+        Inner Loops: 1
+        Rabbit: False
+        Osu: False
+        Rabbit_Workload: False
+        Workloads:
+            spmv -a 114 -b 25
+
+    410-429: Cori, Verbose (Waiting on)
+        Nodes: 8
+        Cores per Node: 32
+        Iterations: 100
+        Stencil: 0
+        Inner Loops: 1
+        Rabbit: False
+        Osu: False
+        Rabbit_Workload: False
+        Workloads:
+            hpcg -a 114 -b 25
+
+    430-449: Cori, Verbose (Waiting on)
+        Nodes: 8
+        Cores per Node: 32
+        Iterations: 100
+        Stencil: 0
+        Inner Loops: 1
+        Rabbit: False
+        Osu: False
+        Rabbit_Workload: False
+        Workloads:
+            lammps -a 64000 -b 250
+
+    450-469: Attaway, Verbose (Waiting on)
+        Nodes: 8
+        Cores per Node: 32
+        Iterations: 500
+        Stencil: 0, 32768
+        Inner Loops: 1
+        Rabbit: False
+        Osu: False
+        Rabbit_Workload: False
+        Workloads:
+            sleep -a 100000 -b 10000
+
+    470-489: Attaway, Verbose (Waiting on)
+        Nodes: 8
+        Cores per Node: 32
+        Iterations: 500
+        Stencil: 0, 32768
+        Inner Loops: 1
+        Rabbit: False
+        Osu: False
+        Rabbit_Workload: False
+        Workloads:
+            fwq -a 100000 -b 10000
+
+    490-509: Attaway, Verbose (Waiting on)
+        Nodes: 8
+        Cores per Node: 32
+        Iterations: 200
+        Stencil: 0, 32768
+        Inner Loops: 1
+        Rabbit: False
+        Osu: False
+        Rabbit_Workload: False
+        Workloads:
+            spmv -a 114 -b 25
+
+    510-529: Attaway, Verbose (Waiting on)
+        Nodes: 8
+        Cores per Node: 32
+        Iterations: 100
+        Stencil: 0, 32768
+        Inner Loops: 1
+        Rabbit: False
+        Osu: False
+        Rabbit_Workload: False
+        Workloads:
+            hpcg -a 114 -b 25
+
+    530-549: Attaway, Verbose (Waiting on)
+        Nodes: 8
+        Cores per Node: 32
+        Iterations: 100
+        Stencil: 0
+        Inner Loops: 1
+        Rabbit: False
+        Osu: False
+        Rabbit_Workload: False
+        Workloads:
+            lammps -a 64000 -b 250
+
 

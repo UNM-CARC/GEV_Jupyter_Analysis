@@ -102,8 +102,8 @@ def parseExperiment(eid):
                         iterations = int(f.read().strip())
                         explist[12] = iterations
 
-                    # Experiments 1-330 - Sleep and fwq workloads were Gaussian distribution
-                    if eid in range(1, 329):
+                    # Experiments 1-549 - Sleep and fwq workloads were Gaussian distribution
+                    if eid in range(1, 550):
                         if explist[2] == 'sleep' or explist[2] == 'fwq':
                             explist[3] = 'Gaussian'
                         else:
@@ -126,8 +126,8 @@ def parseExperiment(eid):
                                 explist[15] = 'Flat'
                             else:
                                 explist[15] = 'Cache'
-                    # Experiments 235 - 329 ran on Attaway
-                    elif eid in range(235, 330):
+                    # Experiments 235 - 329 and 450 - 549 ran on Attaway
+                    elif eid in (list(range(235, 330)) + list(range(450, 550))):
                         explist[13] = 'Attaway'
                         explist[14] = 'None'
                         explist[15] = 'None'
@@ -143,8 +143,8 @@ def parseExperiment(eid):
                     else:
                         explist[16] = 0
 
-                    # Experiments 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 15, 19-329  are verbose
-                    if eid in ([1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 15] + list(range(19, 330))):
+                    # Experiments 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 15, 19-549  are verbose
+                    if eid in ([1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 15] + list(range(19, 550))):
                         explist[17] = 1
                     else:
                         explist[17] = 0
