@@ -661,11 +661,11 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             hpcg -a 114 -b 25
 
-    320-324: Attaway, Verbose (Waiting on)
+    320-324: Attaway, Verbose
         Nodes: 16
         Cores per Node: 32
         Iterations: 100
-        Stencil: 0
+        Stencil: 0, 32768
         Inner Loops: 1
         Rabbit: False
         Osu: False
@@ -673,11 +673,11 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             lammps -a 64000 -b 250
 
-    325-329: Attaway, Verbose (Waiting on)
-        Nodes: 54
+    325-329: Attaway, Verbose
+        Nodes: 32
         Cores per Node: 32
         Iterations: 100
-        Stencil: 0
+        Stencil: 0, 32768
         Inner Loops: 1
         Rabbit: False
         Osu: False
@@ -685,7 +685,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             lammps -a 64000 -b 250
 
-    330-349: Cori, Verbose (Waiting on)
+    330-349: Cori, Verbose
         Nodes: 8
         Cores per Node: 32
         Iterations: 500
@@ -697,7 +697,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             sleep -a 100000 -b 10000
 
-    350-369: Cori, Verbose (Waiting on)
+    350-369: Cori, Verbose
         Nodes: 8
         Cores per Node: 32
         Iterations: 500
@@ -709,7 +709,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             fwq -a 100000 -b 10000
 
-    370-389: Cori, Verbose (Waiting on)
+    370-389: Cori, Verbose
         Nodes: 8
         Cores per Node: 32
         Iterations: 500
@@ -721,7 +721,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             dgemm -a 256 -b 64
 
-    390-409: Cori, Verbose (Waiting on)
+    390-409: Cori, Verbose
         Nodes: 8
         Cores per Node: 32
         Iterations: 200
@@ -733,7 +733,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             spmv -a 114 -b 25
 
-    410-429: Cori, Verbose (Waiting on)
+    410-429: Cori, Verbose
         Nodes: 8
         Cores per Node: 32
         Iterations: 100
@@ -745,7 +745,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             hpcg -a 114 -b 25
 
-    430-449: Cori, Verbose (Waiting on)
+    430-449: Cori, Verbose
         Nodes: 8
         Cores per Node: 32
         Iterations: 100
@@ -757,7 +757,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             lammps -a 64000 -b 250
 
-    450-469: Attaway, Verbose (Waiting on)
+    450-469: Attaway, Verbose
         Nodes: 8
         Cores per Node: 32
         Iterations: 500
@@ -769,7 +769,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             sleep -a 100000 -b 10000
 
-    470-489: Attaway, Verbose (Waiting on)
+    470-489: Attaway, Verbose
         Nodes: 8
         Cores per Node: 32
         Iterations: 500
@@ -781,7 +781,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             fwq -a 100000 -b 10000
 
-    490-509: Attaway, Verbose (Waiting on)
+    490-509: Attaway, Verbose
         Nodes: 8
         Cores per Node: 32
         Iterations: 200
@@ -793,11 +793,11 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             spmv -a 114 -b 25
 
-    510-529: Attaway, Verbose (Waiting on)
+    510-529: Attaway, Verbose
         Nodes: 8
         Cores per Node: 32
         Iterations: 100
-        Stencil: 0, 32768
+        Stencil: 0
         Inner Loops: 1
         Rabbit: False
         Osu: False
@@ -805,7 +805,7 @@ Experiments 8 - 18 were ran outside of the container. Used python scripts to cal
         Workloads:
             hpcg -a 114 -b 25
 
-    530-549: Attaway, Verbose (Waiting on)
+    530-549: Attaway, Verbose
         Nodes: 8
         Cores per Node: 32
         Iterations: 100

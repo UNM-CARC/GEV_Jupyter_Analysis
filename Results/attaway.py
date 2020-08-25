@@ -115,8 +115,8 @@ def writeNormalizedMetaData( infile, outfile ):
 def generateRuntimeFigure( fname, figfile ):
     attawayData = pd.read_csv( fname )
 
-    fig, axs = plt.subplots(2, 3, figsize=(10,15))
-    fig.suptitle( 'Atttaway Runtimes' )
+    fig, axs = plt.subplots( 2, 3, figsize=( 10,15 ) )
+    fig.suptitle( 'Attaway Runtimes' )
     plt.subplots_adjust( wspace = .3, hspace =.3 )
 
 
@@ -195,7 +195,7 @@ def generateRuntimeFigure( fname, figfile ):
     _ = axs[1][0].set_xlabel( 'Ranks' )
     _ = axs[1][0].set_ylabel( 'Runtime (Seconds)' )
 
-    _ = axs[1][1].set_ylim( [950, 1050] )
+    _ = axs[1][1].set_ylim( [950, 1150] )
     _ = axs[1][1].set_title( 'HPCG' )
     _ = axs[1][1].set_xlabel( 'Ranks' )
     _ = axs[1][1].set_ylabel( 'Runtime (Seconds)' )
@@ -215,7 +215,7 @@ def generatePredictionFigure( df_All, workload, baseRanks, CI, fname ):
     coriData = pd.read_csv( fname )
     workloadData = coriData[ ( coriData['Workload'] == workload ) & ( coriData['Ranks'] == baseRanks )]
 
-    kvals = np.array( [1, 2, 4] )
+    kvals = np.array( [1, 2, 4, 8] )
     iterations = 100
 
     MILLION = 1000000
@@ -360,8 +360,8 @@ def generatePredictionFigure( df_All, workload, baseRanks, CI, fname ):
 
 
 def main():
-    expRange = list( range( 235, 330 ) )
-    # writeMetaData( 'Results/AttawayData.csv', list( expRange )
+    expRange = list( range( 235, 330 ) ) + list( range( 450, 550 ) )
+    # writeMetaData( 'Results/AttawayData.csv', list( expRange ) )
 
     # writeNormalizedMetaData( 'Results/AttawayData.csv', 'Results/AttawayNormalized.csv' )
 
@@ -373,13 +373,9 @@ def main():
     df_All = df_All.loc[ df_All[ 'Experiment' ].isin( expRange ) ]
 
     CI = 0.95
+    baseRanks = 256
 
     for workload in workloads:
-        if workload == 'dgemm':
-            baseRanks = 256
-        else:
-            baseRanks = 512
-
         generatePredictionFigure( df_All, workload, baseRanks, CI, 'Results/AttawayData.csv' )
 
 main()

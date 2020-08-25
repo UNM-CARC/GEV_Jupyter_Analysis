@@ -67,7 +67,7 @@ def normalizeMetaData( infile, outfile ):
     df_Meta = pd.read_csv( infile, index_col=0 )
 
     # Create Normalized Meta DataFrame
-    df_Normalized_Meta = pd.DataFrame( columns=[ 'Workload', 'Ranks', 'Stencil', 'Normalized_Runtime'])
+    df_Normalized_Meta = pd.DataFrame( columns=[ 'Workload', 'Ranks', 'Stencil', 'Normalized_Runtime'] )
 
     workloads = df_Meta.Workload.unique().tolist()
     stencils = df_Meta.Stencil.unique().tolist()
@@ -213,9 +213,9 @@ def generatePredictionFigure( df_All, workload, baseRanks, CI, fname ):
 
     outfile = 'Figures/Cori_' + workload + '_prediction'
     coriData = pd.read_csv( fname )
-    workloadData = coriData[ ( coriData['Workload'] == workload ) & ( coriData['Ranks'] == baseRanks )]
+    workloadData = coriData[ ( coriData['Workload'] == workload ) & ( coriData['Ranks'] == baseRanks ) ]
 
-    kvals = np.array( [1, 2, 4] )
+    kvals = np.array( [1, 2, 4, 8] )
     iterations = 100
 
     MILLION = 1000000
@@ -358,7 +358,7 @@ def generatePredictionFigure( df_All, workload, baseRanks, CI, fname ):
 
 
 def main():
-    expRange = list( range( 85, 235 ) )
+    expRange = list( range( 85, 235 ) ) + list( range( 330, 450 ) )
     # writeMetaData( 'Results/CoriData.csv', expRange )
 
     # writeNormalizedMetaData( 'Results/CoriData.csv', 'Results/CoriNormalized.csv' )
@@ -370,7 +370,7 @@ def main():
     df_All = analysis.getAllExperiments()
     df_All = df_All.loc[ df_All[ 'Experiment' ].isin( expRange ) ]
 
-    baseRanks = 512
+    baseRanks = 256
     CI = 0.95
 
     for workload in workloads:
