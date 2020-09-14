@@ -7,6 +7,9 @@ import gevfit
 import numpy as np
 import pandas as pd
 
+import matplotlib as mpl
+mpl.use( 'Agg' )
+
 import matplotlib.pyplot as plt
 import matplotlib.axes as axes
 
@@ -211,12 +214,14 @@ def generateRuntimeFigure( fname, figfile ):
 def generatePredictionFigure( df_All, workload, baseRanks, CI, fname ):
     print( 'Generating Prediction for: ' + workload )
 
-    outfile = 'Figures/Cori_' + workload + '_prediction'
+    outfile1 = 'Figures/Cori_' + workload + '_prediction'
+    outfile2 = 'Figures/Cori_' + workload + '_prediction_stencil'
+
     coriData = pd.read_csv( fname )
     workloadData = coriData[ ( coriData['Workload'] == workload ) & ( coriData['Ranks'] == baseRanks ) ]
 
-    kvals = np.array( [1, 2, 4, 8] )
-    iterations = 100
+    kvals = np.array( [1, 2, 4, 8, 16] )
+    iterations = 50
 
     MILLION = 1000000
     eps = 10 ** -5
@@ -224,8 +229,8 @@ def generatePredictionFigure( df_All, workload, baseRanks, CI, fname ):
     yMax = 0
     count = 0
 
-    fig, axs = plt.subplots( 2, 1, figsize=( 10, 10 ) )
-    fig.suptitle( 'Cori Projection Confidence Interval vs. Actual Runtimes' )
+    fig1 = plt.figure( 1, figsize=( 7, 3 ) )
+    fig2 = plt.figure( 2, figsize=( 7, 3 ) )
 
     count = 0
     labels = ['No Stencil', 'Stencil']
@@ -253,9 +258,14 @@ def generatePredictionFigure( df_All, workload, baseRanks, CI, fname ):
 
         runtimeData = runtimeData.sort_values()
 
+        if ( workload == 'sleep' or workload == 'fwq' ):
+            runtimeData = runtimeData[runtimeData < 70]
+
         minRuntime = min( runtimeData )
         medianRuntime = runtimeData.iloc[ int( len( runtimeData ) / 2  ) ]
         maxRuntime = max( runtimeData )
+
+        print( workload, minRuntime, medianRuntime, maxRuntime )
 
         for k in kvals:
             expListMin = []
@@ -308,11 +318,13 @@ def generatePredictionFigure( df_All, workload, baseRanks, CI, fname ):
             upperBound.append( intervalMax[1] )
 
         if count == 0:
-            _ = axs[count].plot( baseRanks * kvals, middle, color='red' )
-            _ = axs[count].fill_between( baseRanks * kvals, lowerBound, upperBound, color='red', alpha=.1 )
+            plt.figure( 1 )
+            _ = plt.plot( baseRanks * kvals, middle, color='black' )
+            _ = plt.fill_between( baseRanks * kvals, lowerBound, upperBound, color='blue', alpha=0.9 )
         if count == 1:
-            _ = axs[count].plot( baseRanks * kvals, middle, color='blue' )
-            _ = axs[count].fill_between( baseRanks * kvals, lowerBound, upperBound, color='blue', alpha=.1)
+            plt.figure( 2 )
+            _ = plt.plot( baseRanks * kvals, middle, color='black' )
+            _ = plt.fill_between( baseRanks * kvals, lowerBound, upperBound, color='blue', alpha=0.9 )
 
         if count == 0:
             yMin = min( lowerBound)
@@ -324,6 +336,18 @@ def generatePredictionFigure( df_All, workload, baseRanks, CI, fname ):
                 yMax = max( upperBound )
 
         count = count + 1
+
+    baseranks0 = list()
+    baseRuntime0 = list()
+
+    ranks0 = list()
+    currentRuntime0 = list()
+
+    baseranks1 = list()
+    baseRuntime1 = list()
+
+    ranks1 = list()
+    currentRuntime1 = list()
 
     for run in range( 0, len( coriData ) ):
         label = ''
@@ -338,40 +362,87 @@ def generatePredictionFigure( df_All, workload, baseRanks, CI, fname ):
 
         if label == '':
             if myworkload == workload:
-                axs[0].plot( int( ranks ), currentRunTime, 'o', color='red' )
+                if ranks == baseRanks:
+                    if not( ( workload == 'sleep' or workload == 'fwq' ) and ( currentRunTime > 70 ) ):
+                        baseranks0.append( int( ranks ) )
+                        baseRuntime0.append( currentRunTime )
+                        print( 'No Stencil - BaseRanks', workload, ranks, currentRunTime )
+                else:
+                    ranks0.append( int( ranks ) )
+                    currentRuntime0.append( currentRunTime )
+                    print( 'No Stencil - Other', workload, ranks, currentRunTime )
 
         if label == 'Stencil':
             if myworkload == workload:
-                axs[1].plot( int( ranks ), currentRunTime, 'o', color='blue' )
+                if ranks == baseRanks:
+                    if not( ( workload == 'sleep' or workload == 'fwq' ) and ( currentRunTime > 70 ) ):
+                        baseranks1.append( int( ranks ) )
+                        baseRuntime1.append( currentRunTime )
+                        print( 'Stencil - BaseRanks', workload, ranks, currentRunTime )
+                else:
+                    ranks1.append( int( ranks ) )
+                    currentRuntime1.append( currentRunTime )
+                    print( 'Stencil - Other', workload, ranks, currentRunTime )
 
-    _ = axs[0].set_ylim( [0.95 * yMin, 1.05 * yMax] )
-    _ = axs[0].set_title( 'No Interference' )
-    _ = axs[0].set_xlabel( 'Ranks' )
-    _ = axs[0].set_ylabel( 'Runtime (Seconds)' )
+    print( baseranks0 )
+    print( baseRuntime0 )
+    print( ranks0 )
+    print( currentRuntime0 )
+    print( baseranks1 )
+    print( baseRuntime1 )
+    print( ranks1 )
+    print( currentRuntime1 )
 
-    _ = axs[1].set_ylim( [0.95 * yMin, 1.05 * yMax] )
-    _ = axs[1].set_title( 'Stencil' )
-    _ = axs[1].set_xlabel( 'Ranks' )
-    _ = axs[1].set_ylabel( 'Runtime (Seconds)' )
+    if ( workload == 'sleep' ):
+        w = 'ftq'
+    else:
+        w = workload
 
-    plt.savefig( outfile, bboxinches='tight' )
+    plt.figure( 1 )
+
+    _ = plt.plot( baseranks0, baseRuntime0, 'o', color='black', label='Sample workload' )
+    _ = plt.plot( ranks0, currentRuntime0, 'o', color='red', label='Scaled-up workload' )
+    _ = plt.ylim( 0.95 * yMin, 1.05 * yMax )
+    _ = plt.title( 'Cori ' + w + ' - per run bootstrap, global CIs' )
+    _ = plt.xlabel( 'Number of Ranks' )
+    _ = plt.ylabel( 'Runtime (s)' )
+    _ = plt.legend( loc='lower right', borderaxespad=0.5 )
+    plt.tight_layout()
+    fig1.savefig( outfile1 )
+    plt.close( fig1 )
+
+
+    if ( workload != 'hpcg' and workload != 'lammps' ):
+        plt.figure( 2 )
+        _ = plt.plot( baseranks1, baseRuntime1, 'o', color='black', label='Sample workload' )
+        _ = plt.plot( ranks1, currentRuntime1, 'o', color='red', label='Scaled-up workload' )
+        _ = plt.ylim( 0.95 * yMin, 1.05 * yMax )
+        _ = plt.title( 'Cori ' + w + ' - per run bootstrap, global CIs - Stencil' )
+        _ = plt.xlabel( 'Number of Ranks' )
+        _ = plt.ylabel( 'Runtime (s)' )
+        _ = plt.legend( loc='lower right', borderaxespad=0.5 )
+
+        plt.tight_layout()
+        fig2.savefig( outfile2 )
+    plt.close( fig2 )
 
 
 def main():
     expRange = list( range( 85, 235 ) ) + list( range( 330, 450 ) )
-    # writeMetaData( 'Results/CoriData.csv', expRange )
+    #writeMetaData( 'Results/CoriData.csv', expRange )
 
-    # writeNormalizedMetaData( 'Results/CoriData.csv', 'Results/CoriNormalized.csv' )
+    #writeNormalizedMetaData( 'Results/CoriData.csv', 'Results/CoriNormalized.csv' )
 
-    generateRuntimeFigure( 'Results/CoriData.csv', 'Figures/CoriRuntime.png' )
+    #generateRuntimeFigure( 'Results/CoriData.csv', 'Figures/CoriRuntime.png' )
 
-    workloads = ['sleep', 'fwq', 'dgemm', 'spmv', 'hpcg', 'lammps']
+    workloads = ['lammps']
+    #workloads = ['sleep', 'fwq', 'dgemm', 'spmv', 'hpcg', 'lammps']
 
     df_All = analysis.getAllExperiments()
     df_All = df_All.loc[ df_All[ 'Experiment' ].isin( expRange ) ]
 
     baseRanks = 256
-    CI = 0.95
+    CI = 0.90
 
     for workload in workloads:
         generatePredictionFigure( df_All, workload, baseRanks, CI, 'Results/CoriData.csv' )

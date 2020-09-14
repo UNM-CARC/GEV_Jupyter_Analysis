@@ -159,7 +159,9 @@ def parseExperiment(eid):
 
 # Given a Row from parseExperiment or getAllExperiments or a Path, Return the Artifact Data as a DataFrame
 def getData(row):
-    if isinstance(row, pd.DataFrame)  or isinstance(row, pd.Series):
+    if isinstance(row, pd.Series):
+        row = pd.DataFrame([row])
+    if isinstance(row, pd.DataFrame):
         eid = row['Experiment'].values
         rid = row['expid'].values
         rid = rid[0].replace("'", "")

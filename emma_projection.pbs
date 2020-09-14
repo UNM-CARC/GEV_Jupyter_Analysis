@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
-#PBS -l walltime=03:00:00
-#PBS -n node-exclusive
+#PBS -l walltime=06:00:00
 #PBS -N gev-vla
 #PBS -j oe
 #PBS -q default
 
 cd $PBS_O_WORKDIR
 
+echo `pwd`
+
 module load anaconda/5.2.0
 source activate gev-mlflow
 
-python3 Results/attaway.py
+#python3 emma_gev_projection.py
+python3 emma_gev_projection_v3.py
